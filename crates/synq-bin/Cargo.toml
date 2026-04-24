@@ -1,5 +1,5 @@
 [package]
-name = "bin"
+name = "synq-bin"
 version = "0.1.0"
 edition = "2024"
 
@@ -12,5 +12,5 @@ name = "print_lexer"
 path = "src/print_lexer.rs"
 
 [dependencies]
-codec = { path = "../synq-codec/", version = "0.1.0" }
+synq-codec = { path = "../synq-codec/", version = "0.1.0" }
 print-no-std = "0.3.0"

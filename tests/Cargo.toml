@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-codec = { path = "../crates/synq-codec/", version = "0.1.0" }
+synq-codec = { path = "../crates/synq-codec/", version = "0.1.0" }
 paste = "1.0.15"

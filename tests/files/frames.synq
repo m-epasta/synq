@@ -1,0 +1,15 @@
+frame Sender {
+  wallet u64
+  seed i32
+}
+
+frame Client {
+    wallet u64
+    public_key u64
+}
+
+frame Transaction {
+  sender Sender
+  client Client
+  amount f64
+}

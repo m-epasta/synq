@@ -1,0 +1,30 @@
+name: CI
+# description: Run cargo related checks fixes and guards. This should pass to deploy a release
+
+on:
+  push:
+    branches: ["latest", "stable", "fixture"]
+  pull_request:
+    branches: ["latest", "stable", "fixture"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  checkout:
+    name: Rust project
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v
+      - name: Install latest stable
+        uses: actions-rs/toolchain@v1.0.6
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
+      - name: Install just
+        run: apt install just
+
+      - name: Run rust CI
+        run: just ci

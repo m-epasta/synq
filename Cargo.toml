@@ -1,0 +1,4 @@
+[workspace]
+resolver = "2"
+members = ["synq-core", "net", "codec", "benches", "bin", "tests"]
+exclude = ["bin"]

@@ -1,0 +1,13 @@
+synq Block {
+  message get_id (Addr) (Id) {}
+}
+
+frame Addr {
+  name string
+  loc  string
+}
+
+frame Id {
+  hash u64
+  parent Addr
+}

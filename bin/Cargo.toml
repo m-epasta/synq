@@ -1,0 +1,16 @@
+[package]
+name = "bin"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "synq_ast"
+path = "src/synq_ast.rs"
+
+[[bin]]
+name = "print_lexer"
+path = "src/print_lexer.rs"
+
+[dependencies]
+codec = { path = "../codec/", version = "0.1.0" }
+print-no-std = "0.3.0"

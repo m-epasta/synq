@@ -1,0 +1,31 @@
+package block.demo
+
+import chain
+
+synq Block {
+  message check_transaction(TrMetadata) returns (TrAcceptance) {
+    option (chain.check) {
+        // param gets automatically namespaced,
+        // To avoid conflicts (undefined behaviour) you may namespace them yourself if multiple arguments
+        // Like: use TrMetadata or px where x is the param index (starting at 1)
+        require chain.check.valid_addr(sender)
+        require chain.check.valid_addr(receiver)
+        require chain.check.no_trunc(amount)
+        require trusted >= 128
+    }
+  }
+}
+
+frame TrMetadata {
+  sender u64
+  receiver u64
+  required amount u64
+  trusted i8
+}
+
+frame TrAcceptance {
+    sender bool
+    receiver bool
+    amount bool
+    trusted i8
+}

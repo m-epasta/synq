@@ -1,0 +1,22 @@
+Token { typ: Attribute, lexeme: "@", line: 0, col: 0 }
+Token { typ: Ident, lexeme: "over", line: 0, col: 1 }
+Token { typ: Ident, lexeme: "NATS", line: 0, col: 6 }
+Token { typ: Newline, lexeme: "\n", line: 0, col: 10 }
+Token { typ: Newline, lexeme: "\n", line: 1, col: 17 }
+Token { typ: Frame, lexeme: "frame", line: 2, col: 0 }
+Token { typ: Ident, lexeme: "Block", line: 2, col: 6 }
+Token { typ: Lbrace, lexeme: "{", line: 2, col: 12 }
+Token { typ: Newline, lexeme: "\n", line: 2, col: 13 }
+Token { typ: Ident, lexeme: "sender", line: 3, col: 2 }
+Token { typ: Ident, lexeme: "u64", line: 3, col: 11 }
+Token { typ: Newline, lexeme: "\n", line: 3, col: 14 }
+Token { typ: Ident, lexeme: "receiver", line: 4, col: 2 }
+Token { typ: Ident, lexeme: "u64", line: 4, col: 11 }
+Token { typ: Newline, lexeme: "\n", line: 4, col: 14 }
+Token { typ: Ident, lexeme: "amount", line: 5, col: 2 }
+Token { typ: Ident, lexeme: "f64", line: 5, col: 11 }
+Token { typ: Newline, lexeme: "\n", line: 5, col: 14 }
+
+Token { typ: Rbrace, lexeme: "}", line: 6, col: 0 }
+Token { typ: Newline, lexeme: "\n", line: 6, col: 1 }
+Token { typ: Newline, lexeme: "\n", line: 7, col: 0 }

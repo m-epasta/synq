@@ -1,10 +1,10 @@
 use std::path::PathBuf;
-use codec::synq::compile;
+use synq_codec::synq::compile;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    unsafe {std::env::set_var("PHOTON_PRINT_AST", "1")};
-    
+    unsafe { std::env::set_var("PHOTON_PRINT_AST", "1") };
+
     if args.len() == 2 {
         let path = PathBuf::from(&args[1]);
         println!("{path:?}");

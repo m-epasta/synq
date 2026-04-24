@@ -1,5 +1,5 @@
 #[cfg(test)]
-use codec::synq::{lexer::TokenType, scanner::Scanner};
+use synq_codec::synq::{lexer::TokenType, scanner::Scanner};
 
 #[test]
 fn lexing_frame_succeed() -> Result<(), Box<dyn std::error::Error>> {

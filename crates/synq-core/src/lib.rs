@@ -1,7 +1,7 @@
 #![allow(unused_imports)]
 
 mod prelude {
-    use codec::synq::*;
+    use synq_codec::synq::*;
 }
 
 pub use prelude::*;

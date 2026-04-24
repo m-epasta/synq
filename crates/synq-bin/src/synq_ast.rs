@@ -1,10 +1,10 @@
 #![no_std]
 extern crate alloc;
 use alloc::string::ToString;
-use codec::synq::compile;
+use synq_codec::synq::compile;
 
 fn main() {
-    let input ="
+    let input = "
 @over NATS
 @codec minimal
 frame Block {

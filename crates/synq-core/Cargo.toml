@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-codec = { path = "../codec/", version = "0.1.0" }
+codec = { path = "../synq-codec/", version = "0.1.0" }

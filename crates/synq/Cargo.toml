@@ -1,0 +1,13 @@
+[package]
+name = "synq"
+version = "0.1.0"
+edition = "2024"
+authors = ["m-pasta <mepasta@hey.com>"]
+description = "core module of synQ (look at the github repository https://github.com/m-epasta/synq/"
+license = "MIT"
+repository = "https://github.com/m-epasta/synq/crates/synq-core/"
+readme = "README.md"
+
+[dependencies]
+synq-core = "0.1.0"
+synq-codec = "0.1.0"

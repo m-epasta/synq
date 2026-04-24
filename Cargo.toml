@@ -6,6 +6,6 @@ members = [
   "crates/synq-codec",
   "crates/synq-benches",
   "crates/synq-bin",
-  "tests",
+  "tests", "crates/synq",
 ]
 exclude = ["bin"]

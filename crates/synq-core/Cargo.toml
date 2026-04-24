@@ -2,6 +2,11 @@
 name = "synq-core"
 version = "0.1.0"
 edition = "2024"
+description = "core module of synQ (look at the github repository https://github.com/m-epasta/synq/"
+license = "MIT or APACHE-2.0"
+repository = "https://github.com/m-epasta/synq/crates/synq-core/"
+readme = "README.md"
+
 
 [dependencies]
 synq-codec = { path = "../synq-codec/", version = "0.1.0" }

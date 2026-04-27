@@ -19,7 +19,7 @@ jobs:
           components: rustfmt, clippy
 
       - name: Install just
-        run: apt install just
+        run: sudo apt install just
 
       - name: Run rust CI
         run: just ci

@@ -23,3 +23,9 @@ jobs:
 
       - name: Run rust CI
         run: just ci
+
+      - name: Try publishing a package in dry run
+        run: just publish -d
+
+      - name: Publish crates
+        run: just publish --all

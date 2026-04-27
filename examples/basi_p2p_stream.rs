@@ -1,9 +1,9 @@
 //! This file shows how to create a synq connection with a service/device
 
 // The serialization can else be written in code as:
-// ```rust
+// ```no-exec
 // // Make the strict serializable and deserializable
-//  #[derive(Photon)]
+//  #[derive(Proto)]
 //  struct MyFrame {
 //      age: i32
 //      name: String
@@ -14,7 +14,7 @@
 use synq_codec::serialize;
 use synq_core::{connect, send};
 
-#[derive(Photon)]
+#[derive(Proto)]
 struct Block {
     // Addres
     receiver: u64,

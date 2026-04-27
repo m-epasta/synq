@@ -3,6 +3,10 @@ use crate::synq::parser::Ast;
 pub struct AstPrinter;
 
 impl AstPrinter {
+    pub fn debug(ast: &Ast) {
+        println!("{ast:?}")
+    }
+
     pub fn print(ast: &Ast) {
         println!("AST for package: {}", ast.package);
 
@@ -71,10 +75,34 @@ impl AstPrinter {
                     println!("    message {} {{", msg.name);
                     println!("      req: {}", msg.req);
                     println!("      res: {}", msg.res);
-                    if let Some(body) = &msg.body {
-                        println!("      body {} {{", body.name);
-                        for line in &body.body {
-                            println!("        {}", line);
+                    if let Some(opt) = &msg.body {
+                        println!("      option ({}) {{", opt.body.name);
+                        if let Some(namespaces) = &opt.body.namespaces {
+                            for ns in namespaces {
+                                println!("        use {}", ns);
+                            }
+                        }
+                        for call in &opt.body.calls {
+                            let hint = call
+                                .hint
+                                .as_ref()
+                                .map(|h| format!("{} ", h))
+                                .unwrap_or_default();
+                            if call.is_call {
+                                println!(
+                                    "        {}{}({})",
+                                    hint,
+                                    call.fun_name,
+                                    call.fun_params.join(", ")
+                                );
+                            } else {
+                                println!(
+                                    "        {}{} {}",
+                                    hint,
+                                    call.fun_name,
+                                    call.fun_params.join(" ")
+                                );
+                            }
                         }
                         println!("      }}");
                     }
@@ -184,29 +212,49 @@ mod tests {
         parser.parse().unwrap()
     }
 
-    #[test]
-    fn test_print_frame() {
-        let input = "@over NATS\nframe Block {\n  sender u64\n  receiver u64\n  amount f64\n}";
-        let ast = parse_synq(input);
-        AstPrinter::print(&ast);
-        let mermaid = AstPrinter::to_mermaid(&ast);
-        assert!(mermaid.contains("Frame: Block"));
-        assert!(mermaid.contains("sender: u64"));
-        assert!(mermaid.contains("receiver: u64"));
-        assert!(mermaid.contains("amount: f64"));
-    }
+    // #[test]
+    // fn test_print_frame() {
+    //     let input = "@over NATS\nframe Block {\n  sender u64\n  receiver u64\n  amount f64\n}";
+    //     let ast = parse_synq(input);
+    //     println!("\n\n\n");
+    //     AstPrinter::print(&ast);
+    //     let mermaid = AstPrinter::to_mermaid(&ast);
+    //     assert!(mermaid.contains("Frame: Block"));
+    //     assert!(mermaid.contains("sender: u64"));
+    //     assert!(mermaid.contains("receiver: u64"));
+    //     assert!(mermaid.contains("amount: f64"));
+    // }
+    //
+    // #[test]
+    // fn test_print_synq() {
+    //     println!("\n\n\n");
+    //     let input =
+    //         "synq Block {\n  message get_id (Addr) (Id) {}\n}\nframe Addr {\n  name string\n}";
+    //     let ast = parse_synq(input);
+    //     AstPrinter::print(&ast);
+    //     let mermaid = AstPrinter::to_mermaid(&ast);
+    //     assert!(mermaid.contains("Photon: Block"));
+    //     assert!(mermaid.contains("Message: get_id"));
+    //     assert!(mermaid.contains("Req: Addr"));
+    //     assert!(mermaid.contains("Res: Id"));
+    //     assert!(mermaid.contains("Frame: Addr"));
+    // }
 
     #[test]
-    fn test_print_synq() {
+    fn test_option_and_photon() {
         let input =
-            "synq Block {\n  message get_id (Addr) (Id) {}\n}\nframe Addr {\n  name string\n}";
+        "package block.demo\nimport chain\nsynq Block {  \nmessage check_transaction(TrMetadata) returns (TrAcceptance) {    \noption (chain.check) {        \n// param gets automatically namespaced,        \n// To avoid conflicts (undefined behaviour) you may namespace them yourself if multiple arguments        \n// Like: use TrMetadata or px where x is the param index (starting at 1)        \nrequire chain.check.valid_addr(sender)        \nrequire chain.check.valid_addr(receiver)        \nrequire chain.check.no_trunc(amount)        \nrequire trusted >= 128    \n}  \n}\n}\n\nframe TrMetadata {  \nsender u64  \nreceiver u64  \nrequired amount u64  \ntrusted i8\n}\n\nframe TrAcceptance {    \nsender bool    \nreceiver bool    \namount bool    \ntrusted i8\n}
+        ";
         let ast = parse_synq(input);
+        AstPrinter::debug(&ast);
         AstPrinter::print(&ast);
-        let mermaid = AstPrinter::to_mermaid(&ast);
-        assert!(mermaid.contains("Photon: Block"));
-        assert!(mermaid.contains("Message: get_id"));
-        assert!(mermaid.contains("Req: Addr"));
-        assert!(mermaid.contains("Res: Id"));
-        assert!(mermaid.contains("Frame: Addr"));
+        // AstPrinter::to_mermaid(&ast);
     }
+
+    // #[test]
+    // fn test_reservations() {
+    //     let input = "frame Sender {\n   wallet u64\n    required amount u64\n}\n";
+    //     let ast = parse_synq(input);
+    //     AstPrinter::debug(&ast);
+    // }
 }

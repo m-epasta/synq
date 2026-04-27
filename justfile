@@ -1,4 +1,9 @@
+set positional-arguments
+
 default: ci
+
+setup:
+
 
 clippy:
   cargo clippy -- -D warnings
@@ -11,3 +16,6 @@ test:
 
 ast path="tests/files/frame.synq":
   v run print_ast.vsh {{path}}
+
+@publish *args='':
+  v run publish.vsh {{args}}

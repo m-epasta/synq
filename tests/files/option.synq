@@ -19,6 +19,8 @@ synq Block {
 frame TrMetadata {
   sender u64
   receiver u64
+  // This should be a reserved var named amount of type u64
+  // Also means that we can use amount as something else like i32 or anything else
   required amount u64
   trusted i8
 }

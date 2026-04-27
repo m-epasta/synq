@@ -28,6 +28,7 @@ pub enum TokenType {
     // Equivalent of service in proto
     Photon,
     Quote,
+    Use,
 
     Lbrace,
     Rbrace,
@@ -35,9 +36,10 @@ pub enum TokenType {
     Rparen,
 
     Dot,
-    // NOTE: >= and <= are handle in the salter
     Greater,
     Less,
+    GreaterThan,
+    LessThan,
     Star,
     Slash,
 }
@@ -116,6 +118,7 @@ impl<'a> Scanner<'a> {
                 "frame" => TokenType::Frame,
                 "synq" => TokenType::Photon,
                 "message" => TokenType::Message,
+                "use" => TokenType::Use,
                 _ => TokenType::Ident,
             };
 
@@ -137,7 +140,9 @@ impl<'a> Scanner<'a> {
             b')' => TokenType::Rparen,
             b'*' => TokenType::Star,
             b'.' => TokenType::Dot,
+            b'>' if self.next_token().unwrap().typ == TokenType::Equal => TokenType::GreaterThan,
             b'>' => TokenType::Greater,
+            b'<' if self.next_token().unwrap().typ == TokenType::Equal => TokenType::LessThan,
             b'<' => TokenType::Less,
             b'/' => TokenType::Slash,
             b'"' => TokenType::Quote,

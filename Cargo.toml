@@ -1,11 +1,12 @@
 [workspace]
-resolver = "2"
 members = [
   "crates/synq-core",
   "crates/synq-net",
   "crates/synq-codec",
   "crates/synq-benches",
-  "crates/synq-bin",
-  "tests", "crates/synq",
+  "bin",
+  "tests",
+  "crates/synq",
 ]
+resolver = "2"
 exclude = ["bin"]

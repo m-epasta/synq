@@ -1,7 +1,0 @@
-@over NATS
-@codec minimal
-frame Block {
-  sender   u64
-  receiver u64
-  amount   f64
-}

@@ -4,7 +4,11 @@ use crate::{
 };
 use std::mem;
 
-static FHINTSTABLE: [&str; 3] = ["repeated", "optional", "oneof"];
+static FHINTSTABLE: [&str; 4] = ["repeated", "optional", "oneof", "required"];
+static TYPETABLE: [&str; 14] = [
+    "i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "float", "string", "int", "uint",
+    "string", "bytes",
+];
 
 #[derive(Debug, Default)]
 pub struct Ast {
@@ -77,12 +81,25 @@ pub struct MessageDecl {
     pub body: Option<Opt>,
 }
 
-// TODO: Add support for options
-#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Opt {
     pub name: String,
-    pub body: Vec<String>,
+    pub body: BodyOpt,
+}
+
+#[derive(Debug)]
+pub struct BodyOpt {
+    pub name: String,
+    pub namespaces: Option<Vec<String>>,
+    pub calls: Vec<Call>,
+}
+
+#[derive(Debug)]
+pub struct Call {
+    pub hint: Option<String>,
+    pub fun_name: String,
+    pub fun_params: Vec<String>,
+    pub is_call: bool,
 }
 
 pub(crate) struct Parser<'tokens, 'a> {
@@ -125,13 +142,27 @@ impl<'tokens, 'a> Parser<'tokens, 'a> {
             match tok.typ {
                 TokenType::Package => {
                     self.advance();
-                    let pkg = self.advance().unwrap().lexeme.to_string();
+                    let mut pkg = self.advance().unwrap().lexeme.to_string();
+                    while self.peek_type() == Some(TokenType::Dot) {
+                        self.advance();
+                        if let Some(part) = self.advance() {
+                            pkg.push('.');
+                            pkg.push_str(part.lexeme);
+                        }
+                    }
                     ast.package.push_str(&pkg);
                 }
 
                 TokenType::Import => {
                     self.advance();
-                    let pkg = self.advance().unwrap().lexeme.to_string();
+                    let mut pkg = self.advance().unwrap().lexeme.to_string();
+                    while self.peek_type() == Some(TokenType::Dot) {
+                        self.advance();
+                        if let Some(part) = self.advance() {
+                            pkg.push('.');
+                            pkg.push_str(part.lexeme);
+                        }
+                    }
                     ast.import.push(pkg);
                 }
 
@@ -190,12 +221,18 @@ impl<'tokens, 'a> Parser<'tokens, 'a> {
 
                         let tok = self.peek().unwrap();
                         if tok.lexeme == "reserved" {
-                            self.advance();
                             let mut reservations = Vec::new();
                             while self.peek_type() != Some(TokenType::Newline)
                                 && self.peek_type() != Some(TokenType::Eof)
                             {
-                                reservations.push(self.advance().unwrap().lexeme.to_string());
+                                let nxt = self.advance().unwrap().lexeme;
+                                if TYPETABLE.contains(&nxt) {
+                                    // em dash is used for convenience
+                                    let concate = format!("{}—{nxt}", reservations.last().unwrap());
+                                    reservations.push(concate);
+                                } else {
+                                    reservations.push(self.advance().unwrap().lexeme.to_string());
+                                };
                             }
                             reserved_fields.push(ReservedFieldDecl { reservations });
                         } else {
@@ -256,23 +293,113 @@ impl<'tokens, 'a> Parser<'tokens, 'a> {
                             self.advance();
 
                             self.advance();
+                            self.advance();
                             let res = self.advance().unwrap().lexeme.to_string();
                             self.advance();
 
                             self.advance();
                             let body = if self.peek_type() != Some(TokenType::Rbrace) {
                                 self.advance();
-                                let name = self.advance().unwrap().lexeme.to_string();
                                 self.advance();
-                                self.advance();
-                                let mut opt = Vec::with_capacity(512);
-                                while self.peek_type() != Some(TokenType::Rbrace) {
-                                    opt.push(self.advance().unwrap().lexeme.to_string())
+                                let mut opt_name = String::new();
+                                while self.peek_type() != Some(TokenType::Lbrace)
+                                    && self.peek_type() != Some(TokenType::Eof)
+                                {
+                                    let curr = self.advance().unwrap().lexeme;
+                                    opt_name.push_str(curr);
                                 }
-                                Some(Opt { name, body: opt })
+                                self.advance();
+                                let mut namespaces = Vec::new();
+                                while self.peek_type() == Some(TokenType::Use) {
+                                    self.advance();
+                                    namespaces.push(self.advance().unwrap().lexeme.to_string());
+                                }
+
+                                let namespaces = if namespaces.is_empty() {
+                                    None
+                                } else {
+                                    Some(namespaces)
+                                };
+
+                                let mut calls = Vec::new();
+                                while self.peek_type() != Some(TokenType::Rbrace)
+                                    && self.peek_type() != Some(TokenType::Eof)
+                                {
+                                    if self.peek_type() == Some(TokenType::Newline) {
+                                        self.advance();
+                                        continue;
+                                    }
+
+                                    let tmplexeme = self.peek().unwrap().lexeme;
+                                    let hint = if FHINTSTABLE.contains(&tmplexeme) {
+                                        self.advance();
+                                        Some(tmplexeme.to_string())
+                                    } else {
+                                        None
+                                    };
+
+                                    let mut fun_name = self.advance().unwrap().lexeme.to_string();
+                                    while self.peek_type() == Some(TokenType::Dot) {
+                                        self.advance();
+                                        if let Some(seg) = self.advance() {
+                                            fun_name.push('.');
+                                            fun_name.push_str(seg.lexeme);
+                                        }
+                                    }
+
+                                    let mut params = Vec::new();
+                                    let is_call;
+                                    if self.peek_type() == Some(TokenType::Lparen) {
+                                        is_call = true;
+                                        self.advance();
+                                        while let Some(nxt) = self.peek() {
+                                            if nxt.typ == TokenType::Rparen {
+                                                self.advance();
+                                                break;
+                                            }
+                                            if nxt.lexeme == "," {
+                                                self.advance();
+                                                continue;
+                                            }
+                                            params.push(self.advance().unwrap().lexeme.to_string());
+                                        }
+                                    } else {
+                                        is_call = false;
+                                        while let Some(nxt) = self.peek() {
+                                            if nxt.typ == TokenType::Newline
+                                                || nxt.typ == TokenType::Rbrace
+                                                || nxt.typ == TokenType::Eof
+                                            {
+                                                break;
+                                            }
+                                            params.push(self.advance().unwrap().lexeme.to_string());
+                                        }
+                                    }
+
+                                    let call = Call {
+                                        hint,
+                                        fun_name,
+                                        fun_params: params,
+                                        is_call,
+                                    };
+
+                                    calls.push(call);
+                                }
+
+                                let bopt = BodyOpt {
+                                    calls,
+                                    name: opt_name.clone(),
+                                    namespaces,
+                                };
+
+                                Some(Opt {
+                                    name: name.clone(),
+                                    body: bopt,
+                                })
                             } else {
                                 None
                             };
+
                             self.advance();
 
                             messages.push(MessageDecl {

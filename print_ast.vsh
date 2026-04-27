@@ -9,7 +9,7 @@ if !path.starts_with('tests/files/') && !path.ends_with('.synq') {
 }
 
 system('cargo build -q --release')
-cmd := "cargo run -q --bin print_ast -- \"${path}\""
+cmd := "cargo run -q --bin synq_ast -- \"${path}\""
 println(cmd)
 res := execute(cmd)
 if res.exit_code == 0 {

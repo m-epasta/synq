@@ -10,6 +10,4 @@ flowchart TD
     H --> I[Bytecode Generation]
     I --> J[Bytecode Output]
 
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style J fill:#9f9,stroke:#333,stroke-width:2px
 ```
